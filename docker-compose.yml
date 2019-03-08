@@ -3,33 +3,39 @@ services:
   zookeeper:
     hostname: zookeeper
     image: zookeeper
+    restart: always
   kafka:
     hostname: kafka
     depends_on:
       - zookeeper
     image: wurstmeister/kafka
+    restart: always
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_HOST_NAME=localhost
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+    links:
+      - zookeeper:zookeeper
+    # ports:
+    #   - "9092"
+  producer:
+    depends_on:
+      - kafka
+    image: java:8-jdk-alpine
+    volumes:
+      - ./vertx-producer:/vertx-producer
     ports:
-      - "9092"
-  # producer:
-  #   # depends_on:
-  #   #   - zookeeper
-  #   #   - kafka
-  #   image: java:8-jdk-alpine
-  #   volumes:
-  #     - ./vertex-producer:/vertex-producer
-  #   # ports:
-  #   #   - "8080:8080"
-  #   entrypoint: 
-  #     java -jar -Dspring.profiles.active=docker vertex-producer/target/vertx-kafka-producer-0.0.1-SNAPSHOT.jar
-  # consumer:
-  #   depends_on:
-  #     - zookeeper
-  #     - kafka
-  #   image: java:8-jdk-alpine
-  #   volumes:
-  #     - ./spring-kafka:/spring-kafka
-  #   entrypoint: 
-  #     java -jar -Dspring.profiles.active=docker spring-kafka/target/spring-kafka-consumer-0.0.1-SNAPSHOT.jar
+      - "8080:8080"
+    entrypoint: 
+      java -jar -Dspring.profiles.active=docker vertx-producer/target/vertx-kafka-producer-0.0.1-SNAPSHOT.jar
+    links:
+      - kafka:kafka
+  consumer:
+    depends_on:
+      - kafka
+    image: java:8-jdk-alpine
+    volumes:
+      - ./spring-kafka:/spring-kafka
+    entrypoint: 
+      java -jar -Dspring.profiles.active=docker spring-kafka/target/spring-kafka-consumer-0.0.1-SNAPSHOT.jar
+    links:
+      - kafka:kafka

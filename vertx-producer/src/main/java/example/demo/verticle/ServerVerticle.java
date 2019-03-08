@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Properties;
+import java.util.stream.IntStream;
 
 
 @Slf4j
@@ -52,8 +53,7 @@ public class ServerVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
 
         router.route("/msg").handler(routingContext -> {
-
-            String msg = routingContext.request().getParam("Payload");
+            String msg = routingContext.request().getParam("payload");
             HttpServerResponse response = routingContext.response();
 
             if (msg == null)
@@ -62,10 +62,9 @@ public class ServerVerticle extends AbstractVerticle {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     String data = mapper.writeValueAsString(new Payload(msg));
-                    KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("test", data);
+                    KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("test1", data);
                     producer.write(record, res -> {
-                        AsyncResult<RecordMetadata> asyncRes = (AsyncResult<RecordMetadata>) res;
-                        if (asyncRes.succeeded())
+                        if (((AsyncResult<RecordMetadata>) res).succeeded())
                             response.setStatusCode(200).end();
                         else
                             response.setStatusCode(503).end();
@@ -92,5 +91,4 @@ public class ServerVerticle extends AbstractVerticle {
             });
         }
     }
-
 }

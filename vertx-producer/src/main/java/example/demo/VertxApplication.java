@@ -18,6 +18,7 @@ public class VertxApplication {
 	@Autowired
 	private ServerVerticle serverVerticle;
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(VertxApplication.class);
 	}

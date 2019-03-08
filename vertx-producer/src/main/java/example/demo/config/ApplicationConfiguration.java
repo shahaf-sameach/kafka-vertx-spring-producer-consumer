@@ -12,7 +12,7 @@ public class ApplicationConfiguration {
     @Value("${port:8080}")
     private String port;
 
-    @Value("${kafka.bootstrap-servers}")
+    @Value(value = "${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     public String port() {
