@@ -11,7 +11,6 @@ import org.springframework.context.annotation.ComponentScan;
 import javax.annotation.PostConstruct;
 
 @Slf4j
-@ComponentScan
 @SpringBootApplication
 public class VertxApplication {
 

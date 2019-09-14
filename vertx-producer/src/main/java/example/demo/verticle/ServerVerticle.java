@@ -1,25 +1,22 @@
 package example.demo.verticle;
 
+import com.example.model.Payload;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import example.demo.config.ApplicationConfiguration;
-import example.demo.data.Payload;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
 import io.vertx.kafka.client.producer.RecordMetadata;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Properties;
-import java.util.stream.IntStream;
 
 
 @Slf4j
@@ -30,6 +27,8 @@ public class ServerVerticle extends AbstractVerticle {
     private ApplicationConfiguration applicationConfiguration;
 
     private KafkaProducer producer;
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void start() throws Exception {
@@ -59,7 +58,6 @@ public class ServerVerticle extends AbstractVerticle {
             if (msg == null)
                 response.setStatusCode(400).end();
             else {
-                ObjectMapper mapper = new ObjectMapper();
                 try {
                     String data = mapper.writeValueAsString(new Payload(msg));
                     KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("test1", data);
@@ -80,7 +78,7 @@ public class ServerVerticle extends AbstractVerticle {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         if (producer != null) {
             producer.close(voidAsyncResult -> {
                 AsyncResult res = (AsyncResult) voidAsyncResult;
