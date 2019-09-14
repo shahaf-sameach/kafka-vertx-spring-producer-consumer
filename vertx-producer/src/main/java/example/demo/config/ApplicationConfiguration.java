@@ -15,11 +15,18 @@ public class ApplicationConfiguration {
     @Value(value = "${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    @Value(value = "${kafka.topic}")
+    private String topic;
+
     public String port() {
         return this.port;
     }
 
     public String bootstrapServers() {
         return this.bootstrapServers;
+    }
+
+    public String topic() {
+        return this.topic;
     }
 }

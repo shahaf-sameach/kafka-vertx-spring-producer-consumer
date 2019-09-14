@@ -37,7 +37,7 @@ public class ServerVerticle extends AbstractVerticle {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, applicationConfiguration.bootstrapServers());
         config.put(ProducerConfig.ACKS_CONFIG, "1");
-        producer = KafkaProducer.createShared(vertx, "the-producer", config, String.class, String.class);
+        producer = KafkaProducer.createShared(vertx, "vertx-producer", config, String.class, String.class);
 
         vertx.createHttpServer().requestHandler(router()::accept).listen(Integer.parseInt(applicationConfiguration.port()), res -> {
             if (res.succeeded()) {
@@ -60,7 +60,7 @@ public class ServerVerticle extends AbstractVerticle {
             else {
                 try {
                     String data = mapper.writeValueAsString(new Payload(msg));
-                    KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("test1", data);
+                    KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(applicationConfiguration.topic(), data);
                     producer.write(record, res -> {
                         if (((AsyncResult<RecordMetadata>) res).succeeded())
                             response.setStatusCode(200).end();

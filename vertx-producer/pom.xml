@@ -15,11 +15,9 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <!--<parent>-->
-        <!--<groupId>io.vertx</groupId>-->
-        <!--<artifactId>vertx-ext-parent</artifactId>-->
-        <!--<version>34</version>-->
-    <!--</parent>-->
+    <modules>
+        <module>../common</module>
+    </modules>
 
 	<properties>
         <vertx.version>3.6.0-SNAPSHOT</vertx.version>
